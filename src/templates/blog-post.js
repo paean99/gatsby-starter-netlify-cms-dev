@@ -62,9 +62,9 @@ const addSrcSet = (html) => {
   const imagens = root.querySelectorAll("img");
 
   for (const img of imagens) {
-    console.log("*******************************");
+    // console.log("*******************************");
     const imgSrc = img.getAttribute("src");
-    console.log("imagem src: ", imgSrc.toString());
+    // console.log("imagem src: ", imgSrc.toString());
     if (imgSrc && imgSrc.includes("res.cloudinary.com")) {
       const srcset = breakpoints.map((breack) => {
         const ff = `f_auto,q_auto,w_${breack}`;
@@ -76,7 +76,7 @@ const addSrcSet = (html) => {
       img.setAttribute("srcset", gg);
     }
   }
-  console.log("root src: ", root.toString());
+  // console.log("root src: ", root.toString());
   return root.toString();
 };
 
