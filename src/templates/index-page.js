@@ -1,85 +1,56 @@
 import { graphql } from "gatsby";
 import PropTypes from "prop-types";
-import React from "react";
-import Features from "../components/Features";
+import React, { useCallback, useState } from "react";
+import Carousel, { Modal, ModalGateway } from "react-images";
+import Gallery from "react-photo-gallery";
 import Layout from "../components/Layout";
 
-export const IndexPageTemplate = ({
-  title,
-  heading,
-  subheading,
-  description,
-  gallery,
-}) => {
-  console.log("IndexPageTemplate gallery: ", gallery);
+export const IndexPageTemplate = ({ title, gallery }) => {
+  console.log("IndexPageTemplate gallery: ", JSON.stringify(gallery, null, 2));
+
+  const photos = gallery.map((x) => {
+    const { src, srcSet, sizes } = x.image.childImageSharp.fluid;
+    const { height, width } = x.image.childImageSharp.original;
+
+    return {
+      key: Math.random().toString(),
+      src,
+      srcSet,
+      sizes,
+      width,
+      height,
+    };
+  });
+
+  const [currentImage, setCurrentImage] = useState(0);
+  const [viewerIsOpen, setViewerIsOpen] = useState(false);
+
+  const openLightbox = useCallback((event, { photo, index }) => {
+    setCurrentImage(index);
+    setViewerIsOpen(true);
+  }, []);
+
+  const closeLightbox = () => {
+    setCurrentImage(0);
+    setViewerIsOpen(false);
+  };
+
   return (
     <div>
-      <div
-        className="full-width-image margin-top-0"
-        style={{
-          backgroundPosition: `top left`,
-          backgroundAttachment: `fixed`,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            height: "150px",
-            lineHeight: "1",
-            justifyContent: "space-around",
-            alignItems: "left",
-            flexDirection: "column",
-          }}
-        >
-          <h1
-            className="has-text-weight-bold is-size-3-mobile is-size-2-tablet is-size-1-widescreen"
-            style={{
-              boxShadow:
-                "rgb(255, 68, 0) 0.5rem 0px 0px, rgb(255, 68, 0) -0.5rem 0px 0px",
-              backgroundColor: "rgb(255, 68, 0)",
-              color: "white",
-              lineHeight: "1",
-              padding: "0.25em",
-            }}
-          >
-            {title}
-          </h1>
-          <h3
-            className="has-text-weight-bold is-size-5-mobile is-size-5-tablet is-size-4-widescreen"
-            style={{
-              boxShadow:
-                "rgb(255, 68, 0) 0.5rem 0px 0px, rgb(255, 68, 0) -0.5rem 0px 0px",
-              backgroundColor: "rgb(255, 68, 0)",
-              color: "white",
-              lineHeight: "1",
-              padding: "0.25em",
-            }}
-          >
-            {subheading}
-          </h3>
-        </div>
-      </div>
-      <section className="section section--gradient">
-        <div className="container">
-          <div className="section">
-            <div className="columns">
-              <div className="column is-10 is-offset-1">
-                <div className="content">
-                  <div className="columns">
-                    <div className="column is-12">
-                      <h3 className="has-text-weight-semibold is-size-2">
-                        {heading}
-                      </h3>
-                      <p>{description}</p>
-                    </div>
-                  </div>
-                  <Features gridItems={gallery} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Gallery photos={photos} onClick={openLightbox} />
+      <ModalGateway>
+        {viewerIsOpen ? (
+          <Modal onClose={closeLightbox}>
+            <Carousel
+              currentIndex={currentImage}
+              views={photos.map((x) => ({
+                ...x,
+                srcset: x.srcSet,
+              }))}
+            />
+          </Modal>
+        ) : null}
+      </ModalGateway>
     </div>
   );
 };
@@ -90,9 +61,7 @@ IndexPageTemplate.propTypes = {
   subheading: PropTypes.string,
   mainpitch: PropTypes.object,
   description: PropTypes.string,
-  gallery: PropTypes.shape({
-    image: PropTypes.array,
-  }),
+  gallery: PropTypes.array,
 };
 
 const IndexPage = ({ data }) => {
@@ -132,9 +101,7 @@ export const pageQuery = graphql`
           image {
             childImageSharp {
               fluid {
-                src
-                srcSet
-                sizes
+                ...GatsbyImageSharpFluid
               }
               original {
                 height
