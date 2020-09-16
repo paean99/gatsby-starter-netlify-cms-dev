@@ -5,12 +5,12 @@ import Carousel, { Modal, ModalGateway } from "react-images";
 import Gallery from "react-photo-gallery";
 import Layout from "../components/Layout";
 
-export const IndexPageTemplate = ({ title, gallery }) => {
-  console.log("IndexPageTemplate gallery: ", JSON.stringify(gallery, null, 2));
+const getImageSrc = (imageInfo) => {
+  const { alt = "", childImageSharp, image } = imageInfo;
 
-  const photos = gallery.map((x) => {
-    const { src, srcSet, sizes } = x.image.childImageSharp.fluid;
-    const { height, width } = x.image.childImageSharp.original;
+  if (!!image && !!image.childImageSharp) {
+    const { src, srcSet, sizes } = image.childImageSharp.fluid;
+    const { height, width } = image.childImageSharp.original;
 
     return {
       key: Math.random().toString(),
@@ -20,6 +20,30 @@ export const IndexPageTemplate = ({ title, gallery }) => {
       width,
       height,
     };
+  }
+
+  if (!!childImageSharp) {
+    const { src, srcSet, sizes } = childImageSharp.fluid;
+    const { height, width } = childImageSharp.original;
+
+    return {
+      key: Math.random().toString(),
+      src,
+      srcSet,
+      sizes,
+      width,
+      height,
+    };
+  }
+
+  if (!!image && typeof image === "string") return { src: image };
+};
+
+export const IndexPageTemplate = ({ title, gallery }) => {
+  console.log("IndexPageTemplate gallery: ", JSON.stringify(gallery, null, 2));
+
+  const photos = gallery.map((x) => {
+    return getImageSrc(x);
   });
 
   const [currentImage, setCurrentImage] = useState(0);
