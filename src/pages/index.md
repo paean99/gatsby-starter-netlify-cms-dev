@@ -4,8 +4,8 @@ title: Great coffee with a conscience!!
 heading: Great coffee with a conscience
 subheading: Support sustainable farming while enjoying a cup
 gallery:
-  - image: /img/coffee.png
-  - image: /img/coffee.png
+  - image: /img/blog-index.jpg
+  - image: /img/chemex.jpg
 intro:
   blurbs:
     - image: /img/coffee.png
@@ -41,4 +41,5 @@ intro:
     java’s origin and support the farmers that grew it. We take coffee
     production, roasting and brewing seriously and we’re glad to pass that
     knowledge to anyone. This is an edit via identity...
+description: lorem ipsum
 ---
